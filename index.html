@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Évaluation des Stagiaires | QCM</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="background"></div>
+<div id="warning-overlay">
+    <h1>⚠ ALERTE ANTI-TRICHE</h1>
+    <p>Il est interdit de quitter la page pendant l"évaluation.</p>
+</div>
+
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo-container">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                    <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                </svg>
+                <h1>Évaluation d'Entreprise</h1>
+            </div>
+            <button id="theme-toggle" type="button">🌓</button>
+        </header>
+
+        <section id="screen-welcome" class="screen active">
+            <div class="content-box">
+                <h2>Bienvenue dans votre test d'évaluation</h2>
+                <p>Ce QCM a pour but de valider vos acquis durant les cours auxquelles vous avez pu assister. Prenez le temps de lire chaque question. Une seule réponse est possible par question.</p>
+                
+                <form id="trainee-form" class="trainee-form">
+                    <div class="input-group">
+                        <label for="trainee-name">Nom et Prénom :</label>
+                        <input type="text" id="trainee-name" required placeholder="Ex: Jean Dupont">
+                    </div>
+                    <div class="input-group">
+    <label class="section-label">Choisissez un ou plusieurs secteurs d'évaluation :</label>
+    <div id="sector-grid" class="sector-grid">
+        <label class="sector-card">
+            <input type="checkbox" name="sector" value="botanique" checked>
+            <div class="card-content">
+                <span class="icon">🌿</span>
+                <span class="label">Botanique</span>
+            </div>
+        </label>
+        <label class="sector-card">
+            <input type="checkbox" name="sector" value="entretien">
+            <div class="card-content">
+                <span class="icon">✂️</span>
+                <span class="label">Entretien & Taille</span>
+            </div>
+        </label>
+        <label class="sector-card">
+            <input type="checkbox" name="sector" value="pepiniere">
+            <div class="card-content">
+                <span class="icon">🪴</span>
+                <span class="label">Pépinière</span>
+            </div>
+        </label>
+        <label class="sector-card">
+            <input type="checkbox" name="sector" value="vente">
+            <div class="card-content">
+                <span class="icon">💰</span>
+                <span class="label">Vente & Conseil</span>
+            </div>
+        </label>
+        <label class="sector-card">
+            <input type="checkbox" name="sector" value="paysagisme">
+            <div class="card-content">
+                <span class="icon">🏗️</span>
+                <span class="label">Paysagisme</span>
+            </div>
+        </label>
+        <label class="sector-card">
+            <input type="checkbox" name="sector" value="fleuristerie">
+            <div class="card-content">
+                <span class="icon">💐</span>
+                <span class="label">Fleuristerie</span>
+            </div>
+        </label>
+    </div>
+</div>
+                    <button type="submit" class="btn-primary">Commencer l'évaluation</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="screen-quiz" class="screen">
+            <div class="quiz-header">
+                <div class="progress-container">
+                    <span id="question-counter">Question 1 / 10</span>
+                    <div class="progress-bar-bg">
+                        <div id="progress-bar" class="progress-bar-fill"></div>
+                    </div>
+                </div>
+                <div class="timer-container">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span id="timer">00:00</span>
+                </div>
+            </div>
+
+            <div class="content-box">
+                <h3 id="question-text" class="question-text">Chargement de la question...</h3>
+                <div id="options-container" class="options-container">
+                    </div>
+                <div class="quiz-actions">
+                    <button id="btn-next" class="btn-primary" disabled>Question suivante</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="screen-result" class="screen">
+            <div class="content-box result-box">
+                <h2>Évaluation terminée !</h2>
+                <p id="trainee-feedback-name"></p>
+                
+                <div class="score-circle">
+                    <span id="final-score">0</span>
+                    <span class="score-total">/ <span id="total-questions">0</span></span>
+                </div>
+                
+                <p id="result-message" class="result-message"></p>
+
+                <div id="detailed-correction" class="detailed-correction">
+                    <h3>Correction détaillée :</h3>
+                    </div>
+
+                <div class="result-actions">
+                    <button id="btn-export" class="btn-secondary">Télécharger mes réponses (JSON)</button>
+                    <button id="btn-restart" class="btn-primary">Recommencer</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
