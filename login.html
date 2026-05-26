@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion | Évaluation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background"></div>
+
+    <div class="app-container" style="margin-top: 10vh;">
+        <section class="login-container">
+            <h2>Connexion Requise</h2>
+            <p>Veuillez vous connecter pour accéder à l'espace d'évaluation.</p>
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="email">Adresse E-mail :</label>
+                    <input type="email" id="email" required placeholder="Ex: jean.dupont@entreprise.fr">
+                </div>
+                <div class="input-group">
+                    <label for="password">Mot de passe :</label>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-primary">Se connecter</button>
+            </form>
+        </section>
+    </div>
+
+    <script>
+        // Simulation rapide de connexion pour l'exemple
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            // On sauvegarde l'utilisateur dans le localStorage
+            localStorage.setItem("user", JSON.stringify({ email: email }));
+            // On redirige vers la page du QCM
+            window.location.href = "index.html";
+        });
+    </script>
+</body>
+</html>
