@@ -72,6 +72,7 @@ let currentQuestionIndex = 0;
 let score = 0;
 let userAnswers = [];
 let traineeData = {};
+let currentUser = JSON.parse(localStorage.getItem("user")) || null;
 let timerInterval;
 let timeElapsed = 0; // En secondes
 
