@@ -26,36 +26,16 @@
             <button id="theme-toggle" type="button">🌓</button>
         </header>
 
-        <section id="screen-login" class="login-container">
-            <h2>Connexion Requise</h2>
-            <p>Veuillez vous connecter pour accéder à l'espace d'évaluation.</p>
-            <form id="loginForm">
-                <div class="input-group">
-                    <label for="email">Adresse E-mail :</label>
-                    <input type="email" id="email" required placeholder="Ex: jean.dupont@entreprise.fr">
-                </div>
-                <div class="input-group">
-                    <label for="password">Mot de passe :</label>
-                    <input type="password" id="password" required placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn-primary">Se connecter</button>
-            </form>
-        </section>
-
         <section id="screen-welcome" class="screen active">
             <div class="content-box">
                 <h2>Bienvenue dans votre test d'évaluation</h2>
-                <p>Ce QCM a pour but de valider vos acquis durant les cours auxquels vous avez pu assister. Prenez le temps de lire chaque question. Une seule réponse est possible par question.</p>
+                <p>Indiquez votre département et sélectionnez les secteurs à valider pour lancer votre QCM personnalisé.</p>
                 
                 <form id="trainee-form" class="trainee-form">
-                    <div class="input-group">
-                        <label for="trainee-name">Nom et Prénom :</label>
-                        <input type="text" id="trainee-name" required placeholder="Ex: Jean Dupont">
-                    </div>
                     
                     <div class="input-group">
-                        <label for="trainee-dept">Département / Secteur :</label>
-                        <input type="text" id="trainee-dept" required placeholder="Ex: Pépinière Nord / Caisse">
+                        <label for="trainee-dept">Votre Département / Secteur :</label>
+                        <input type="text" id="trainee-dept" required placeholder="Ex: Pépinière Nord, Caisse, Logistique...">
                     </div>
 
                     <div class="input-group">
@@ -119,7 +99,7 @@
                     </div>
                 </div>
                 <div style="display: flex; gap: 15px; align-items: center;">
-                    <span id="question-timer" title="Temps restant pour cette question">30</span>
+                    <span id="question-timer">30</span>
                     <div class="timer-container">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"></circle>
@@ -132,8 +112,7 @@
 
             <div class="content-box">
                 <h3 id="question-text" class="question-text">Chargement de la question...</h3>
-                <div id="options-container" class="options-container">
-                    </div>
+                <div id="options-container" class="options-container"></div>
                 <div class="quiz-actions">
                     <button id="btn-next" class="btn-primary" disabled>Question suivante</button>
                 </div>
@@ -156,7 +135,7 @@
 
                 <div id="detailed-correction" class="detailed-correction">
                     <h3>Correction détaillée :</h3>
-                    </div>
+                </div>
 
                 <div class="result-actions">
                     <button id="btn-export" class="btn-secondary">Télécharger mes réponses (JSON)</button>
