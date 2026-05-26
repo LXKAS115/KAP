@@ -134,6 +134,11 @@ function checkTheme() {
 
 // Démarrer le Quiz
 function handleStartQuiz(e) {
+    if (!currentUser) {
+    alert("Veuillez vous connecter avant de commencer le QCM !");
+    window.location.href = "login.html";
+    return;
+}
     e.preventDefault();
     
     // 1. Récupérer les secteurs sélectionnés
