@@ -454,3 +454,22 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+async function sendScoreToServer() {
+    if (!currentUser) return;
+
+    const data = {
+        user: currentUser.email,
+        score: score,
+        total: currentQuestions.length,
+        time: timeElapsed
+    };
+
+    await fetch("/save-score", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+}
