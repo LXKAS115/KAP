@@ -265,6 +265,8 @@ function endQuiz() {
         generateResults();
         switchScreen('result');
     }, 500);
+
+    sendScoreToServer();
 }
 
 function setupAntiCheat() {
