@@ -33,15 +33,16 @@
 
 body {
     font-family: var(--font-family);
-    background-color: transparent; 
+    background-color: var(--bg-color); 
     color: var(--text-main);
     line-height: 1.6;
     transition: var(--transition);
     min-height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start; /* Aligne vers le haut pour éviter les tassements verticaux */
     align-items: center;
-    padding: 20px;
+    padding: 40px 20px;
 }
 
 /* --- Layout Principal --- */
@@ -49,6 +50,16 @@ body {
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .app-header {
@@ -119,6 +130,18 @@ p { color: var(--text-muted); margin-bottom: 1.5rem; }
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* --- Structure dédiée à la Connexion (FIX BUG VISUEL) --- */
+.login-container {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 400px;
+    margin: 2rem auto 0 auto; /* Centre le bloc proprement sous le reste */
 }
 
 /* --- Boutons --- */
@@ -340,33 +363,14 @@ button {
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
+/* --- Arrière-plan Interactif (FIX BUG ÉCRAN NOIR) --- */
 .background {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-
-    z-index: -1;
-
-    background: radial-gradient(
-        circle at center,
-        rgba(0, 100, 255, 0.4),
-        #000 60%
-    );
-
-    transition: background 0.1s;
-}
-
-.app-container {
-    position: relative;
-    z-index: 1;
-}
-
-.container {
-    width: 100%;
-    max-width: 1200px;
-    margin: auto;
-    display: flex;
-    flex-direction: column;
+    z-index: -1; /* Reste sagement derrière le contenu */
+    background: var(--bg-color); /* Utilise la couleur de thème par défaut en secours */
+    transition: background 0.2s ease;
 }
