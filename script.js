@@ -142,19 +142,21 @@ function checkTheme() {
 function handleStartQuiz(e) {
     e.preventDefault();
 
+    // 1. Vérification de la connexion de l'utilisateur
     if (!currentUser) {
         alert("Veuillez vous connecter avant de commencer le QCM !");
         window.location.href = "login.html";
         return;
     }
     
-    // Fix : Récupération et stockage des données saisies dans le formulaire
-    const nameInput = document.getElementById('trainee-name');
+    // 2. Extraction du nom depuis l'email (ex: "jean.dupont@mail.com" devient "jean.dupont")
+    traineeData.name = currentUser.email ? currentUser.email.split('@')[0] : "Stagiaire";
+    
+    // 3. Récupération du département toujours présent dans le formulaire HTML
     const deptInput = document.getElementById('trainee-dept');
-    traineeData.name = nameInput ? nameInput.value : "Stagiaire";
     traineeData.department = deptInput ? deptInput.value : "Non spécifié";
     
-    // 1. Récupérer les secteurs sélectionnés
+    // 4. Récupérer les secteurs sélectionnés
     const selectedSectors = Array.from(document.querySelectorAll('input[name="sector"]:checked'))
                                  .map(cb => cb.value);
     
@@ -163,7 +165,7 @@ function handleStartQuiz(e) {
         return;
     }
 
-    // 2. Fusionner les questions des secteurs choisis
+    // 5. Fusionner les questions des secteurs choisis
     currentQuestions = [];
     selectedSectors.forEach(sector => {
         if (questionCatalog[sector]) {
@@ -171,9 +173,10 @@ function handleStartQuiz(e) {
         }
     });
 
-    // 3. Mélanger les questions
+    // 6. Mélanger les questions
     currentQuestions.sort(() => Math.random() - 0.5);
 
+    // 7. Initialisation des variables du quiz et changement d'écran
     currentQuestionIndex = 0;
     score = 0;
     userAnswers = [];
@@ -182,11 +185,10 @@ function handleStartQuiz(e) {
     startTimer();
     loadQuestion();
     
-    if(document.getElementById('question-timer')) {
+    if (document.getElementById('question-timer')) {
         startQuestionTimer();
     }
 }
-
 // Naviguer entre les écrans
 function switchScreen(screenName) {
     Object.values(DOM.screens).forEach(screen => {
