@@ -31,7 +31,7 @@ const questionCatalog = {
         { question: "Le terme 'adventice' désigne :", options: ["Une plante rare", "Une mauvaise herbe", "Un engrais", "Un outil"], correctAnswer: 1, explanation: "C'est une plante qui pousse là où on ne veut pas." },
         { question: "Qu'est-ce que le terreautage ?", options: ["Enlever la terre", "Apporter une fine couche de terreau sur un gazon", "Planter en pot", "Arroser beaucoup"], correctAnswer: 1, explanation: "Cela régénère la pelouse." }
     ],
-    pepiniere: [
+    pepinriere: [
         { question: "Qu'est-ce que le 'chignonage' ?", options: ["Une coiffure", "Les racines qui tournent en rond dans le pot", "Une maladie des feuilles", "Le greffage"], correctAnswer: 1, explanation: "Cela arrive quand la plante reste trop longtemps en pot." },
         { question: "Le bouturage est une multiplication...", options: ["Sexuée", "Végétative (Asexuée)", "Par graines", "Par pollinisation"], correctAnswer: 1, explanation: "On obtient un clone de la plante mère." },
         { question: "La 'stratification' des graines consiste à :", options: ["Les écraser", "Les soumettre au froid pour lever la dormance", "Les peindre", "Les cuire"], correctAnswer: 1, explanation: "Cela simule l'hiver pour déclencher la germination." },
@@ -51,11 +51,11 @@ const questionCatalog = {
     paysagisme: [
         { question: "Quelle est la largeur minimale d'une allée pour deux personnes ?", options: ["40 cm", "80 cm", "120 cm", "300 cm"], correctAnswer: 2, explanation: "C'est la norme pour une circulation confortable." },
         { question: "L'exposition 'Adret' désigne :", options: ["Le versant à l'ombre", "Le versant au soleil", "Le sommet", "Le fond de la vallée"], correctAnswer: 1, explanation: "En montagne, c'est le côté exposé au sud." },
-        { question: "Un plan de masse représente le jardin vu :", options: ["De face", "De profil", "De dessus", "En 3D"], correctAnswer: 2, explanation: "C'est une vue aérienne à l'échelle." },
+        { question: "Un plan de masse represents le jardin vu :", options: ["De face", "De profil", "De dessus", "En 3D"], correctAnswer: 2, explanation: "C'est une vue aérienne à l'échelle." },
         { question: "Le 'point focal' dans un jardin sert à :", options: ["Arroser", "Attirer l'œil sur un élément précis", "Cacher le voisin", "Mesurer la terre"], correctAnswer: 1, explanation: "Une statue, un bel arbre ou une fontaine." }
     ],
     fleuristerie: [
-        { question: "Pourquoi recoupe-t-on les tiges en biseau ?", options: ["Pour faire joli", "Pour augmenter la surface d'absorption d'eau", "Pour qu'elles tiennent debout", "Pour enlever les épines"], correctAnswer: 1, explanation: "Cela prolonge la durée de vie du bouquet." },
+        { question: "Pourquoi recoupe-t-on les tiges en biseau ?", options: ["Pour faire joli", "Pour augmenter la surface d'absorption d'eau", "Pour qu'elles tiennent debout", "Pour enlever les épines"], correctAnswer: 1, explanation: "Pour augmenter la surface d'absorption d'eau et éviter que la tige ne repose à plat au fond du vase." },
         { question: "Qu'est-ce que le 'mousse florale' ?", options: ["Une plante parasite", "Un support pour piquer les fleurs", "Une maladie", "Un engrais"], correctAnswer: 1, explanation: "Elle retient l'eau pour les compositions." },
         { question: "Laquelle est une fleur de bulbe ?", options: ["Tulipe", "Rose", "Marguerite", "Lilas"], correctAnswer: 0, explanation: "La tulipe pousse à partir d'un bulbe." },
         { question: "Un bouquet 'rond' se travaille avec la technique :", options: ["De l'empilement", "De la vrille (spirale)", "Du collage", "Du tressage"], correctAnswer: 1, explanation: "Toutes les tiges tournent dans le même sens." }
@@ -71,7 +71,7 @@ let currentQuestions = [];
 let currentQuestionIndex = 0;
 let score = 0;
 let userAnswers = [];
-let traineeData = {};
+let traineeData = { name: "Stagiaire", department: "N/A" }; // Fix : Initialisé par défaut pour éviter les crashs
 let currentUser = JSON.parse(localStorage.getItem("user")) || null;
 let timerInterval;
 let timeElapsed = 0; // En secondes
@@ -108,15 +108,16 @@ const DOM = {
 function initApp() {
     setupEventListeners();
     checkTheme();
+    setupAntiCheat();
 }
 
 // Gestion des Événements
 function setupEventListeners() {
-    DOM.themeToggle.addEventListener('click', toggleTheme);
-    DOM.form.addEventListener('submit', handleStartQuiz);
-    DOM.quiz.btnNext.addEventListener('click', handleNextQuestion);
-    DOM.result.btnRestart.addEventListener('click', resetApp);
-    DOM.result.btnExport.addEventListener('click', exportResults);
+    if (DOM.themeToggle) DOM.themeToggle.addEventListener('click', toggleTheme);
+    if (DOM.form) DOM.form.addEventListener('submit', handleStartQuiz);
+    if (DOM.quiz.btnNext) DOM.quiz.btnNext.addEventListener('click', handleNextQuestion);
+    if (DOM.result.btnRestart) DOM.result.btnRestart.addEventListener('click', resetApp);
+    if (DOM.result.btnExport) DOM.result.btnExport.addEventListener('click', exportResults);
 }
 
 // Gestion du Thème (Clair/Sombre)
@@ -125,22 +126,33 @@ function toggleTheme() {
     const currentTheme = html.getAttribute('data-theme');
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
     html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('user-theme', newTheme);
 }
 
 function checkTheme() {
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    const savedTheme = localStorage.getItem('user-theme');
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.documentElement.setAttribute('data-theme', 'dark');
     }
 }
 
 // Démarrer le Quiz
 function handleStartQuiz(e) {
-    if (!currentUser) {
-    alert("Veuillez vous connecter avant de commencer le QCM !");
-    window.location.href = "login.html";
-    return;
-}
     e.preventDefault();
+
+    if (!currentUser) {
+        alert("Veuillez vous connecter avant de commencer le QCM !");
+        window.location.href = "login.html";
+        return;
+    }
+    
+    // Fix : Récupération et stockage des données saisies dans le formulaire
+    const nameInput = document.getElementById('trainee-name');
+    const deptInput = document.getElementById('trainee-dept');
+    traineeData.name = nameInput ? nameInput.value : "Stagiaire";
+    traineeData.department = deptInput ? deptInput.value : "Non spécifié";
     
     // 1. Récupérer les secteurs sélectionnés
     const selectedSectors = Array.from(document.querySelectorAll('input[name="sector"]:checked'))
@@ -154,13 +166,14 @@ function handleStartQuiz(e) {
     // 2. Fusionner les questions des secteurs choisis
     currentQuestions = [];
     selectedSectors.forEach(sector => {
-        currentQuestions = currentQuestions.concat(questionCatalog[sector]);
+        if (questionCatalog[sector]) {
+            currentQuestions = currentQuestions.concat(questionCatalog[sector]);
+        }
     });
 
-    // 3. Mélanger les questions (Optionnel mais recommandé)
+    // 3. Mélanger les questions
     currentQuestions.sort(() => Math.random() - 0.5);
 
-    // ... reste du code pour lancer le quiz ...
     currentQuestionIndex = 0;
     score = 0;
     userAnswers = [];
@@ -168,22 +181,28 @@ function handleStartQuiz(e) {
     switchScreen('quiz');
     startTimer();
     loadQuestion();
+    
+    if(document.getElementById('question-timer')) {
+        startQuestionTimer();
+    }
 }
 
 // Naviguer entre les écrans
 function switchScreen(screenName) {
-    Object.values(DOM.screens).forEach(screen => screen.classList.remove('active'));
-    DOM.screens[screenName].classList.add('active');
+    Object.values(DOM.screens).forEach(screen => {
+        if (screen) screen.classList.remove('active');
+    });
+    if (DOM.screens[screenName]) DOM.screens[screenName].classList.add('active');
 }
 
-// Chronomètre
+// Chronomètre global
 function startTimer() {
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         timeElapsed++;
         const minutes = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
         const seconds = (timeElapsed % 60).toString().padStart(2, '0');
-        DOM.quiz.timer.textContent = `${minutes}:${seconds}`;
+        if (DOM.quiz.timer) DOM.quiz.timer.textContent = `${minutes}:${seconds}`;
     }, 1000);
 }
 
@@ -208,26 +227,28 @@ function loadQuestion() {
         btn.addEventListener('click', () => selectOption(index, btn));
         DOM.quiz.optionsContainer.appendChild(btn);
     });
+
+    if(document.getElementById('question-timer')) {
+        startQuestionTimer();
+    }
 }
 
 // Sélectionner une option
 function selectOption(selectedIndex, buttonElement) {
-    // Désactiver tous les boutons
     const buttons = DOM.quiz.optionsContainer.querySelectorAll('.option-btn');
     buttons.forEach(btn => {
         btn.classList.remove('selected');
-        btn.disabled = true; // Empêche de changer de réponse
+        btn.disabled = true; 
     });
 
-    // Mettre en évidence la sélection
     buttonElement.classList.add('selected');
     
     const q = currentQuestions[currentQuestionIndex];
     const isCorrect = selectedIndex === q.correctAnswer;
 
-    // Enregistrer la réponse
+    // Enregistrer la réponse (Fix: suppression de q.id inexistant, remplacé par index)
     userAnswers.push({
-        questionId: q.id,
+        questionIndex: currentQuestionIndex,
         questionText: q.question,
         selectedOption: selectedIndex,
         selectedText: q.options[selectedIndex],
@@ -237,7 +258,6 @@ function selectOption(selectedIndex, buttonElement) {
         explanation: q.explanation
     });
 
-    // Indiquer visuellement si c'est bon ou mauvais (Mode entrainement)
     if (isCorrect) {
         buttonElement.classList.add('correct');
         score++;
@@ -246,7 +266,9 @@ function selectOption(selectedIndex, buttonElement) {
         buttons[q.correctAnswer].classList.add('correct');
     }
 
+    if (questionCountdown) clearInterval(questionCountdown);
     DOM.quiz.btnNext.disabled = false;
+    saveProgress();
 }
 
 // Passer à la question suivante ou terminer
@@ -263,8 +285,8 @@ function handleNextQuestion() {
 // Fin du Quiz
 function endQuiz() {
     clearInterval(timerInterval);
+    if (questionCountdown) clearInterval(questionCountdown);
     
-    // Mettre à jour la barre de progression à 100%
     DOM.quiz.progressBar.style.width = `100%`;
 
     setTimeout(() => {
@@ -273,26 +295,27 @@ function endQuiz() {
     }, 500);
 
     sendScoreToServer();
+    localStorage.removeItem('evaluation_backup'); // Nettoyage après fin réussie
 }
 
 function setupAntiCheat() {
     document.addEventListener("visibilitychange", () => {
-        if (document.hidden && currentQuestions.length > 0) {
-            // Affiche l'alerte rouge
+        if (document.hidden && currentQuestions.length > 0 && currentQuestionIndex < currentQuestions.length) {
             const overlay = document.getElementById('warning-overlay');
-            overlay.style.display = 'flex';
-            
-            // On la cache après 3 secondes
-            setTimeout(() => { 
-                overlay.style.display = 'none'; 
-            }, 3000);
+            if (overlay) {
+                overlay.style.display = 'flex';
+                setTimeout(() => { 
+                    overlay.style.display = 'none'; 
+                }, 3000);
+            }
         }
     });
 }
 
 function saveProgress() {
+    const nameField = document.getElementById('trainee-name');
     const dataToSave = {
-        name: document.getElementById('trainee-name').value,
+        name: nameField ? nameField.value : traineeData.name,
         index: currentQuestionIndex,
         score: score,
         answers: userAnswers,
@@ -301,49 +324,66 @@ function saveProgress() {
     localStorage.setItem('evaluation_backup', JSON.stringify(dataToSave));
 }
 
-// À appeler au chargement de la page (init)
 function checkResume() {
     const backup = localStorage.getItem('evaluation_backup');
     if (backup) {
         const confirmResume = confirm("Une session précédente a été trouvée. Voulez-vous reprendre ?");
         if (confirmResume) {
             const data = JSON.parse(backup);
-            // Recharger les données et sauter à la question actuelle
-            // (Logique de reprise...)
+            // Logique de restauration si nécessaire
         }
     }
 }
 
 let questionCountdown;
 function startQuestionTimer() {
-    let timeLeft = 30; // 30 secondes par question
-    document.getElementById('question-timer').textContent = timeLeft;
+    let timeLeft = 30; 
+    const timerDisplay = document.getElementById('question-timer');
+    if (!timerDisplay) return;
+
+    timerDisplay.textContent = timeLeft;
     
     clearInterval(questionCountdown);
     questionCountdown = setInterval(() => {
         timeLeft--;
-        document.getElementById('question-timer').textContent = timeLeft;
+        timerDisplay.textContent = timeLeft;
         
         if (timeLeft <= 0) {
             clearInterval(questionCountdown);
-            handleTimeOut(); // Fonction à créer pour passer à la suite en cas d'échec
+            handleTimeOut(); 
         }
     }, 1000);
+}
+
+function handleTimeOut() {
+    // Forcer une réponse fausse vide si le temps est écoulé
+    const q = currentQuestions[currentQuestionIndex];
+    userAnswers.push({
+        questionIndex: currentQuestionIndex,
+        questionText: q.question,
+        selectedOption: -1,
+        selectedText: "Temps écoulé",
+        correctOption: q.correctAnswer,
+        correctText: q.options[q.correctAnswer],
+        isCorrect: false,
+        explanation: q.explanation
+    });
+    handleNextQuestion();
 }
 
 // Générer et afficher les résultats
 function generateResults() {
     DOM.result.feedbackName.textContent = `Merci ${traineeData.name} (Dépt. ${traineeData.department}). Voici votre bilan :`;
     
-    // Animation du score (Cercle CSS)
-    const percentage = Math.round((score / currentQuestions.length) * 100);
+    const percentage = currentQuestions.length > 0 ? Math.round((score / currentQuestions.length) * 100) : 0;
     const circle = document.querySelector('.score-circle');
-    circle.style.background = `conic-gradient(var(--primary-color) ${percentage}%, var(--border-color) 0%)`;
+    if (circle) {
+        circle.style.background = `conic-gradient(var(--primary-color) ${percentage}%, var(--border-color) 0%)`;
+    }
     
     DOM.result.scoreDisplay.textContent = score;
     DOM.result.totalDisplay.textContent = currentQuestions.length;
 
-    // Message personnalisé
     if (percentage === 100) {
         DOM.result.message.textContent = "Parfait ! Vous maîtrisez tous les concepts.";
         DOM.result.message.style.color = "var(--success-color)";
@@ -355,7 +395,6 @@ function generateResults() {
         DOM.result.message.style.color = "var(--error-color)";
     }
 
-    // Générer la correction détaillée
     DOM.result.correctionContainer.innerHTML = '<h3>Correction détaillée :</h3>';
     
     userAnswers.forEach((ans, index) => {
@@ -370,28 +409,32 @@ function generateResults() {
             ${!ans.isCorrect ? `<div class="correction-a"><strong>Bonne réponse :</strong> ${ans.correctText}</div>` : ''}
             <div class="correction-exp">${ans.explanation}</div>
         `;
-        
         DOM.result.correctionContainer.appendChild(item);
     });
+
+    const revisionZone = document.getElementById('revision-zone');
+    if (revisionZone) generateRevisionSheet();
 }
 
 function generateRevisionSheet() {
     let html = "<h3>📚 Tes axes de progression :</h3><ul>";
-    
-    // On parcourt les réponses du stagiaire
-    state.answers.forEach(ans => {
-        if (!ans.success) {
-            // On ajoute le conseil spécifique à la question ratée
-            html += `<li><strong>${ans.theme} :</strong> ${ans.advice}</li>`;
+    let regularFailures = false;
+
+    userAnswers.forEach(ans => {
+        if (!ans.isCorrect) {
+            regularFailures = true;
+            html += `<li><strong>Question ${ans.questionIndex + 1} :</strong> ${ans.explanation}</li>`;
         }
     });
     
     html += "</ul>";
-    document.getElementById('revision-zone').innerHTML = html;
+    const revisionZone = document.getElementById('revision-zone');
+    if (revisionZone) {
+        revisionZone.innerHTML = regularFailures ? html : "<h3>📚 Tes axes de progression :</h3><p>Aucun ! Félicitations.</p>";
+    }
 }
 
-// Exporter les résultats (Téléchargement d'un fichier)
-// Cela compense l'absence de base de données backend
+// Exporter les résultats
 function exportResults() {
     const finalData = {
         trainee: traineeData,
@@ -414,38 +457,14 @@ function exportResults() {
 
 // Réinitialiser l'application
 function resetApp() {
-    DOM.form.reset();
+    if (DOM.form) DOM.form.reset();
     switchScreen('welcome');
 }
 
 // Lancer l'initialisation au chargement
 document.addEventListener('DOMContentLoaded', initApp);
 
-// --- LOGIQUE DU CHANGEMENT DE THÈME ---
-const themeToggle = document.getElementById('theme-toggle');
-const htmlElement = document.documentElement;
-
-themeToggle.addEventListener('click', () => {
-    // On regarde le thème actuel
-    const currentTheme = htmlElement.getAttribute('data-theme');
-    
-    // On bascule
-    if (currentTheme === 'light') {
-        htmlElement.setAttribute('data-theme', 'dark');
-        // Optionnel : on enregistre le choix pour la prochaine fois
-        localStorage.setItem('user-theme', 'dark');
-    } else {
-        htmlElement.setAttribute('data-theme', 'light');
-        localStorage.setItem('user-theme', 'light');
-    }
-});
-
-// --- AU CHARGEMENT : APPLIQUER LE THÈME SAUVEGARDÉ ---
-const savedTheme = localStorage.getItem('user-theme');
-if (savedTheme) {
-    htmlElement.setAttribute('data-theme', savedTheme);
-}
-
+// --- AU CHARGEMENT : INTERACTION SOURIS SANS CRASH NOIR ---
 document.addEventListener("DOMContentLoaded", () => {
     const bg = document.querySelector(".background");
 
@@ -454,10 +473,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const x = e.clientX;
             const y = e.clientY;
 
+            // FIX : Remplacement du fond '#000' pur par une couleur CSS de thème (sombre mais transparente)
             bg.style.background = `
-                radial-gradient(circle at ${x}px ${y}px, rgba(0,150,255,0.6), transparent 40%),
-                radial-gradient(circle at ${x/2}px ${y/2}px, rgba(0,50,255,0.3), transparent 50%),
-                #000
+                radial-gradient(circle at ${x}px ${y}px, rgba(37, 99, 235, 0.4), transparent 45%),
+                radial-gradient(circle at ${x/2}px ${y/2}px, rgba(37, 99, 235, 0.1), transparent 50%),
+                #0f172a
             `;
         });
     }
@@ -473,11 +493,15 @@ async function sendScoreToServer() {
         time: timeElapsed
     };
 
-    await fetch("/save-score", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    });
+    try {
+        await fetch("/save-score", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+    } catch(err) {
+        console.error("Impossible d'envoyer le score au serveur (mode local sans backend).", err);
+    }
 }
