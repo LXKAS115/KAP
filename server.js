@@ -5,6 +5,12 @@ const bcrypt = require('bcryptjs');
 const session = require('express-session');
 
 const app = express();
+app.use(session({
+    secret: 'une_cle_secrete_ultra_securisee_123!', // Change cela par ce que tu veux
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } // Reste à false tant qu'on est sur localhost (sans HTTPS)
+}));
 app.use(cors()); 
 app.use(express.json()); 
 
