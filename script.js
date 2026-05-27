@@ -463,6 +463,37 @@ function resetApp() {
     switchScreen('welcome');
 }
 
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const errorMessage = document.getElementById('error-message');
+
+    fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: emailInput.value, password: passwordInput.value })
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Identifiant ou mot de passe incorrect');
+        }
+    })
+    .then(data => {
+        errorMessage.style.display = 'none';
+        window.location.href = "qcm.html";
+    })
+    .catch(error => {
+        errorMessage.innerText = error.message;
+        errorMessage.style.display = 'block';
+    });
+});
+
 // Lancer l'initialisation au chargement
 document.addEventListener('DOMContentLoaded', initApp);
 
