@@ -1,3 +1,4 @@
+/* 1. Le fond et la structure de la page */
 body {
     margin: 0;
     padding: 0;
@@ -5,7 +6,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #0f172a;
+    background-color: #0f172a; /* Ton fond sombre */
+    font-family: sans-serif; /* Rétablit une police propre */
     overflow: hidden;
 }
 
@@ -19,7 +21,65 @@ body {
     background: #0f172a;
 }
 
+/* 2. Rétablir le joli conteneur blanc du formulaire */
 .login-container {
     position: relative;
     z-index: 1;
+    background: #ffffff; /* Fond blanc de la boîte */
+    padding: 30px;
+    border-radius: 12px; /* Beaux bords arrondis */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Ombre douce autour */
+    max-width: 400px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 3. Espacement des textes et champs */
+.login-container h2 {
+    margin-top: 0;
+    color: #0f172a;
+}
+
+.login-container p {
+    color: #475569;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.input-group input {
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* 4. Ton bouton bleu d'origine */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background-color: #2563eb; /* Le beau bleu */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
 }
