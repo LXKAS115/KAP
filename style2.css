@@ -66,6 +66,8 @@ body {
     margin-bottom: 30px;
     text-align: center;
     line-height: 1.5;
+   font-family: 'Poppins', sans-serif;
+   font-weight: 700; /* Écriture bien épaisse et pro */
 }
 
 /* ==========================================================================
