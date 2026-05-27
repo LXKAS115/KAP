@@ -5,19 +5,20 @@ const bcrypt = require('bcryptjs');
 const session = require('express-session');
 
 const app = express();
+
 app.use(session({
-    secret: 'une_cle_secrete_ultra_securisee_123!', // Change cela par ce que tu veux
+    secret: 'une_cle_secrete_ultra_securisee_123!', 
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false } // Reste à false tant qu'on est sur localhost (sans HTTPS)
+    cookie: { secure: false } 
 }));
+
 app.use(cors()); 
 app.use(express.json()); 
 
 const PORT = 3000;
 const SECRET_KEY = "MA_CLE_SUPER_SECRETE_QUE_PERSONNE_NE_DOIT_SAVOIR";
 
-// C'est ICI qu'on met les mots de passe générés (entre guillemets)
 const usersDB = [
     { 
         email: "formateur@entreprise.fr", 
@@ -27,12 +28,11 @@ const usersDB = [
     { 
         email: "stagiaire1@entreprise.fr", 
         name: "Julien Dupuis",
-        // J'ai mis ici la clé que tu as générée dans ta console :
         passwordHash: "$2b$10$TkSBy57TQxVFDi8y/hrbAeLYeAdOLmOb3haDZUcQhduasCp2JEqr6" 
     }
 ];
 
-// Route de vérification des identifiants (NE PAS MODIFIER CETTE PARTIE)
+// Route de vérification des identifiants
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
     const user = usersDB.find(u => u.email === email);
@@ -41,11 +41,13 @@ app.post('/api/login', async (req, res) => {
         return res.status(401).json({ error: "Identifiants incorrects." });
     }
 
-    // Le mot "user.passwordHash" cible automatiquement le bon mot de passe crypté de l'utilisateur au-dessus
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
         return res.status(401).json({ error: "Identifiants incorrects." });
     }
+
+    // --- CORRECTION ICI : On donne le badge de session pour débloquer le QCM ---
+    req.session.isLoggedIn = true;
 
     const token = jwt.sign(
         { email: user.email, name: user.name }, 
@@ -59,6 +61,16 @@ app.post('/api/login', async (req, res) => {
     });
 });
 
+// Route sécurisée pour le QCM (Placée avant le app.listen)
+app.get('/qcm.html', (req, res) => {
+    if (req.session.isLoggedIn) {
+        res.sendFile(__dirname + '/qcm.html');
+    } else {
+        res.redirect('/index.html'); 
+    }
+});                 
+
+// Lancement du serveur (Toujours tout à la fin)
 app.listen(PORT, () => {
     console.log(`Le serveur de sécurité tourne sur http://localhost:${PORT}`);
 });
