@@ -24,20 +24,61 @@
                     <input type="password" id="password" required placeholder="••••••••">
                 </div>
                 <button type="submit" class="btn-primary">Se connecter</button>
-                <p id="error-message" style="color: red; display: none; font-weight: bold; margin-top: 10px;"></p>
+                <p id="error-message" style="display: none;"></p>
             </form>
         </section>
     </div>
 
     <script>
-        // Simulation rapide de connexion pour l'exemple
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
-            // On sauvegarde l'utilisateur dans le localStorage
-            localStorage.setItem("user", JSON.stringify({ email: email }));
-            // On redirige vers la page du QCM
-            window.location.href = "qcm.html";
+
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const errorMessage = document.getElementById('error-message');
+
+            // On envoie les identifiants au serveur Node.js (Sur la bonne route /api/login)
+            fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: emailInput.value, password: passwordInput.value })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    // Si le statut est 401, le serveur dit que c'est faux
+                    throw new Error('Identifiant ou mot de passe incorrect.');
+                }
+            })
+            .then(data => {
+                // Tout est bon ! Le serveur a validé. On cache l'erreur et on y va
+                errorMessage.style.display = 'none';
+                window.location.href = "qcm.html";
+            })
+            .catch(error => {
+                // C'est faux, on affiche le message d'erreur stylisé en rouge
+                errorMessage.innerText = error.message;
+                errorMessage.style.display = 'block';
+            });
+        });
+
+        // --- CODE DE LA SOURIS ANIMÉE ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const bg = document.querySelector(".background");
+            if (bg) {
+                document.addEventListener("mousemove", (e) => {
+                    const x = e.clientX;
+                    const y = e.clientY;
+                    bg.style.background = `
+                        radial-gradient(circle at ${x}px ${y}px, rgba(37, 99, 235, 0.4), transparent 45%),
+                        radial-gradient(circle at ${x/2}px ${y/2}px, rgba(37, 99, 235, 0.1), transparent 50%),
+                        #0f172a
+                    `;
+                });
+            }
         });
     </script>
 </body>
